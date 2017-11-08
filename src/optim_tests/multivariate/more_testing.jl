@@ -36,12 +36,13 @@ function extrosenbrock_gradient!(storage::AbstractArray,
 end
 
 function extrosenbrock_hessian!(storage,x,param)
-    error("Hessian not implemented for Extended Hessian")
+    error("Hessian not implemented for Extended Rosenbrock")
 end
 
 function _extrosenbrockproblem(N::Int;
-                               initial_x::AbstractArray{T} = zeros(N),
+                               initial_x::AbstractArray{T} = repmat([-1.2,1],Int(N/2)),
                                name::AbstractString = "Extended Rosenbrock ($N)") where T
+    @assert mod(N,2) == 0
     OptimizationProblem(name,
                         extrosenbrock,
                         extrosenbrock_gradient!,
@@ -54,3 +55,71 @@ function _extrosenbrockproblem(N::Int;
 end
 
 examples["Extended Rosenbrock"] = _extrosenbrockproblem(100)
+
+
+##########################
+### Extended Powell
+###
+### Problem (22) from [3]
+##########################
+
+function extpowell(x::AbstractArray, param::MatVecHolder)
+    # TODO: we could do this without the xt storage holder
+    n = length(x)
+    j1 = 1:4:n-3;
+    j2 = 2:4:n-2;
+    j3 = 3:4:n-1;
+    j4 = 4:4:n;
+
+    xt = param.vec
+    @. xt[j1] = x[j1] + 10*x[j2]
+    @. xt[j2] = sqrt(5)*(x[j3]-x[j4])
+    @. xt[j3] = (x[j2] - 2*x[j3])^2;
+    @. xt[j4] = sqrt(10)*(x[j1]-x[j4])^2;
+
+    return 0.5*sum(abs2, xt)
+end
+
+
+
+function extpowell_gradient!(storage::AbstractArray,
+                                 x::AbstractArray, param::MatVecHolder)
+    # TODO: we could do this without the xt storage holder
+    n = length(x)
+    j1 = 1:4:n-3;
+    j2 = 2:4:n-2;
+    j3 = 3:4:n-1;
+    j4 = 4:4:n;
+
+    xt = param.vec
+    @. xt[j1] = x[j1] + 10*x[j2]
+    @. xt[j2] = sqrt(5)*(x[j3]-x[j4])
+    @. xt[j3] = (x[j2] - 2*x[j3])^2;
+    @. xt[j4] = sqrt(10)*(x[j1]-x[j4])^2;
+
+    @. storage[j1] = xt[j1] + 2*sqrt(10)*(x[j1]-x[j4]).*xt[j4];
+    @. storage[j2] = 10*xt[j1] + 2*(x[j2]-2*x[j3]).*xt[j3];
+    @. storage[j3] = sqrt(5)*xt[j2] - 4*(x[j2]-2*x[j3]).*xt[j3];
+    @. storage[j4] = -sqrt(5)*xt[j2] - 2*sqrt(10)*(x[j1]-x[j4]).*xt[j4];
+end
+
+function extpowell_hessian!(storage,x,param)
+    error("Hessian not implemented for Extended Powell")
+end
+
+function _extpowellproblem(N::Int;
+                           initial_x::AbstractArray{T} = repmat(float([3,-1,0,1]),Int(N/4)),
+                           name::AbstractString = "Extended Powell ($N)") where T
+    @assert mod(N,4) == 0
+    OptimizationProblem(name,
+                        extpowell,
+                        extpowell_gradient!,
+                        extpowell_hessian!,
+                        initial_x,
+                        ones(initial_x),
+                        true,
+                        false,
+                        MatVecHolder(Array{T}(0,0),similar(initial_x)))
+end
+
+examples["Extended Powell"] = _extpowellproblem(100)

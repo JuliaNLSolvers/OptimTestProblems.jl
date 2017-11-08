@@ -173,3 +173,54 @@ function _penfunIproblem(N::Int;
 end
 
 examples["Penalty Function I"] = _penfunIproblem(100)
+
+
+
+##########################
+### Trigonometric function
+###
+### Problem (26) from [3]
+##########################
+
+function trigonometric(x::AbstractArray, param)
+    # TODO: we could do this without the xt storage holder
+    n = length(x)
+    xt = param.vec
+    scos = sum(cos,x)
+    @. xt = n + (1:n)*(one(eltype(x)) - cos(x)) - sin(x) - scos
+
+    return 0.5*sum(abs2, xt)
+end
+
+function trigonometric_gradient!(storage::AbstractArray,
+                                 x::AbstractArray, param)
+    # TODO: we could do this without the xt storage holder
+    n = length(x)
+    xt = param.vec
+    scos = sum(cos,x)
+    @. xt = n + (1:n)*(one(eltype(x)) - cos(x)) - sin(x) - scos
+
+    sxt = sum(xt)
+    @. storage = sxt*sin(x) + xt * ((1:n)*sin(x) - cos(x))
+end
+
+function trigonometric_hessian!(storage,x,param)
+    error("Hessian not implemented for Trigonometric Function")
+end
+
+function _trigonometricproblem(N::Int;
+                          initial_x::AbstractArray{T} = ones(N)/N,
+                          alpha::T = sqrt(1e-5),
+                          name::AbstractString = "Trigonometric ($N)") where T
+    OptimizationProblem(name,
+                        trigonometric,
+                        trigonometric_gradient!,
+                        trigonometric_hessian!,
+                        initial_x,
+                        zeros(initial_x),
+                        true,
+                        false,
+                        MatVecHolder(Array{T}(0,0),similar(initial_x)))
+end
+
+examples["Trigonometric"] = _trigonometricproblem(100)

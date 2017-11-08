@@ -160,13 +160,12 @@ function _penfunIproblem(N::Int;
                           initial_x::AbstractArray{T} = collect(float(1:N)),
                           alpha::T = sqrt(1e-5),
                           name::AbstractString = "Penalty Function I ($N)") where T
-    @assert mod(N,4) == 0
     OptimizationProblem(name,
                         penfunI,
                         penfunI_gradient!,
                         penfunI_hessian!,
                         initial_x,
-                        ones(initial_x),
+                        repmat([NaN], N),
                         true,
                         false,
                         ParaboloidStruct(Array{T}(0,0),Array{T}(0),

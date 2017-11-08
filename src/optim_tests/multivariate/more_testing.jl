@@ -83,7 +83,7 @@ end
 
 
 function extpowell_gradient!(storage::AbstractArray,
-                                 x::AbstractArray, param::MatVecHolder)
+                             x::AbstractArray, param::MatVecHolder)
     # TODO: we could do this without the xt storage holder
     n = length(x)
     j1 = 1:4:n-3;
@@ -123,3 +123,54 @@ function _extpowellproblem(N::Int;
 end
 
 examples["Extended Powell"] = _extpowellproblem(100)
+
+
+
+##########################
+### Penalty function I
+###
+### Problem (23) from [3]
+### Default alpha = sqrt(1e-5)
+##########################
+
+function penfunI(x::AbstractArray, param)
+    # TODO: we could do this without the xt storage holder
+    xt = param.xt
+    @. xt = param.alpha*(x-one(eltype(x)))
+
+    xtend = sum(abs2,x)-0.25
+    return 0.5*(sum(abs2, xt) + abs2(xtend)) # TODO: make 0.25 a parameter
+end
+
+function penfunI_gradient!(storage::AbstractArray,
+                            x::AbstractArray, param)
+    # TODO: we could do this without the xt storage holder
+    xt = param.xt
+    @. xt = param.alpha*(x-one(eltype(x)))
+
+    xtend = sum(abs2,x)-0.25
+    @. storage = param.alpha*xt + 2.0*xtend*x
+end
+
+function penfunI_hessian!(storage,x,param)
+    error("Hessian not implemented for Penalty Function I")
+end
+
+function _penfunIproblem(N::Int;
+                          initial_x::AbstractArray{T} = collect(float(1:N)),
+                          alpha::T = sqrt(1e-5),
+                          name::AbstractString = "Penalty Function I ($N)") where T
+    @assert mod(N,4) == 0
+    OptimizationProblem(name,
+                        penfunI,
+                        penfunI_gradient!,
+                        penfunI_hessian!,
+                        initial_x,
+                        ones(initial_x),
+                        true,
+                        false,
+                        ParaboloidStruct(Array{T}(0,0),Array{T}(0),
+                                         similar(initial_x), alpha))
+end
+
+examples["Penalty Function I"] = _penfunIproblem(100)

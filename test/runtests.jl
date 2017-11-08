@@ -9,7 +9,12 @@ for (name, p) in uvp
 end
 mvp = OptimTestProblems.UnconstrainedProblems.examples
 for (name, p) in mvp
+    if any(isnan, p.solutions)
+        # TODO: how to check these problems?
+        continue
+    end
     gs = similar(p.initial_x)
-    p.g!(gs, p.solutions)
-    @test sum(gs) - zero(eltype(gs)) < 1e-32
+    pg! = gradient(p)
+    pg!(gs, p.solutions)
+    @test norm(gs, Inf) - zero(eltype(gs)) < 1e-32
 end

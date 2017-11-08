@@ -116,7 +116,7 @@ function _extpowellproblem(N::Int;
                         extpowell_gradient!,
                         extpowell_hessian!,
                         initial_x,
-                        ones(initial_x),
+                        zeros(initial_x),
                         true,
                         false,
                         MatVecHolder(Array{T}(0,0),similar(initial_x)))

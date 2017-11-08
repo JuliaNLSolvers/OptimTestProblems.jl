@@ -339,7 +339,7 @@ examples["Rosenbrock"] = OptimizationProblem("Rosenbrock",
                                              rosenbrock,
                                              rosenbrock_gradient!,
                                              rosenbrock_hessian!,
-                                             [0.0, 0.0],
+                                             [-1.2, 1.0],
                                              [1.0, 1.0],
                                              true,
                                              true)

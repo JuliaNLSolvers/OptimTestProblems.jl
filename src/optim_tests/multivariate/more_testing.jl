@@ -49,6 +49,7 @@ function _extrosenbrockproblem(N::Int;
                         extrosenbrock_hessian!,
                         initial_x,
                         ones(initial_x),
+                        zero(T),
                         true,
                         false,
                         MatVecHolder(Array{T}(0,0),similar(initial_x)))
@@ -117,6 +118,7 @@ function _extpowellproblem(N::Int;
                         extpowell_hessian!,
                         initial_x,
                         zeros(initial_x),
+                        zero(T),
                         true,
                         false,
                         MatVecHolder(Array{T}(0,0),similar(initial_x)))
@@ -166,6 +168,7 @@ function _penfunIproblem(N::Int;
                         penfunI_hessian!,
                         initial_x,
                         repmat([NaN], N),
+                        NaN,
                         true,
                         false,
                         ParaboloidStruct(Array{T}(0,0),Array{T}(0),
@@ -218,6 +221,7 @@ function _trigonometricproblem(N::Int;
                         trigonometric_hessian!,
                         initial_x,
                         zeros(initial_x),
+                        zero(T),
                         true,
                         false,
                         MatVecHolder(Array{T}(0,0),similar(initial_x)))

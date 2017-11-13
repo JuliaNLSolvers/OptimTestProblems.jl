@@ -34,6 +34,7 @@ examples["Exponential"] = OptimizationProblem("Exponential",
                                               exponential_hessian!,
                                               [0.0, 0.0],
                                               [2.0, 3.0],
+                                              exponential([2.0, 3.0]),
                                               true,
                                               true)
 
@@ -75,6 +76,7 @@ examples["Fletcher-Powell"] = OptimizationProblem("Fletcher-Powell",
                                                   fletcher_powell_hessian!,
                                                   [-1.0, 0.0, 0.0], # Same as in source
                                                   [1.0, 0.0, 0.0],
+                                                  fletcher_powell([1.0, 0.0, 0.0]),
                                                   false,
                                                   false)
 
@@ -108,6 +110,7 @@ examples["Himmelblau"] = OptimizationProblem("Himmelblau",
                                              himmelblau_hessian!,
                                              [2.0, 2.0],
                                              [3.0, 2.0],
+                                             himmelblau([3.0, 2.0]),
                                              true,
                                              true)
 ##########################################################################
@@ -140,6 +143,7 @@ examples["Hosaki"] = OptimizationProblem("Hosaki",
                                          hosaki_hessian!,
                                          [3.6, 1.9],
                                          [4.0, 2.0],
+                                         hosaki([4.0, 2.0]),
                                          true,
                                          true)
 
@@ -181,7 +185,8 @@ examples["Large Polynomial"] = OptimizationProblem("Large Polynomial",
                                                    large_polynomial_gradient!,
                                                    large_polynomial_hessian!,
                                                    zeros(250),
-                                                   float([1:250;]),
+                                                   collect(float(1:250)),
+                                                   large_polynomial(collect(float(1:250))),
                                                    true,
                                                    true)
 
@@ -222,6 +227,7 @@ examples["Parabola"] = OptimizationProblem("Parabola",
                                            parabola_hessian!,
                                            [0.0, 0.0, 0.0, 0.0, 0.0],
                                            [1.0, 2.0, 3.0, 5.0, 8.0],
+                                           parabola([1.0, 2.0, 3.0, 5.0, 8.0]),
                                            true,
                                            true)
 
@@ -259,6 +265,7 @@ examples["Polynomial"] = OptimizationProblem("Polynomial",
                                              polynomial_hessian!,
                                              [0.0, 0.0, 0.0],
                                              [10.0, 7.0, 108.0],
+                                             polynomial([10.0, 7.0, 108.0]),
                                              true,
                                              true)
 
@@ -307,6 +314,7 @@ examples["Powell"] = OptimizationProblem("Powell",
                                          powell_hessian!,
                                          [3.0, -1.0, 0.0, 1.0],
                                          [0.0, 0.0, 0.0, 0.0],
+                                         powell([0.0, 0.0, 0.0, 0.0]),
                                          true,
                                          true)
 
@@ -341,5 +349,6 @@ examples["Rosenbrock"] = OptimizationProblem("Rosenbrock",
                                              rosenbrock_hessian!,
                                              [-1.2, 1.0],
                                              [1.0, 1.0],
+                                             rosenbrock([1.0, 1.0]),
                                              true,
                                              true)

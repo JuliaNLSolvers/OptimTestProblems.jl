@@ -7,13 +7,14 @@ export OptimizationProblem, objective, gradient, hessian
 #######################
 # TODO: We could write fg! calls as well here
 #######################
-immutable OptimizationProblem{P}
+immutable OptimizationProblem{P,Tf <: Real}
     name::AbstractString
     f::Function
     g!::Function
     h!::Function
-    initial_x::Vector{Float64}
+    initial_x::Vector{Tf}
     solutions::Vector
+    minimum::Tf
     isdifferentiable::Bool
     istwicedifferentiable::Bool
     parameters::P
@@ -23,12 +24,14 @@ OptimizationProblem(name::AbstractString,
                     f::Function,
                     g!::Function,
                     h!::Function,
-                    initial_x::Vector{Float64},
+                    initial_x::Vector{Tf},
                     solutions::Vector,
+                    minimum::Tf,
                     isdifferentiable::Bool,
-                    istwicedifferentiable::Bool) =
+                    istwicedifferentiable::Bool) where Tf =
                         OptimizationProblem(name, f, g!, h!, initial_x,
-                                            solutions, isdifferentiable,
+                                            solutions, minimum,
+                                            isdifferentiable,
                                             istwicedifferentiable,
                                             nothing)
 

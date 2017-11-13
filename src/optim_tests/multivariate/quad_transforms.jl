@@ -37,6 +37,7 @@ function _quadraticproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N))
                         quad_hessian!,
                         initial_x,
                         x0,
+                        zero(T),
                         true,
                         true,
                         MatVecHolder(mat, x0))
@@ -92,6 +93,7 @@ function _paraboloidproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N)
                         paraboloid_hessian!,
                         initial_x,
                         x0,
+                        zero(T),
                         true,
                         false,
                         ParaboloidStruct(mat, x0, similar(x0), alpha))

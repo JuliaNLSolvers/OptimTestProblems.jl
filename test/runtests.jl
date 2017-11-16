@@ -20,6 +20,12 @@ for (name, p) in mvp
     pg! = gradient(p)
     pg!(gs, p.solutions)
     @show name, p.minimum
-    @test norm(gs, Inf) - zero(eltype(gs)) < 1e-32
+    if startswith(name, "Penalty Function I")
+        tol = 1e-16
+    else
+        tol = 1e-32
+    end
+
+    @test norm(gs, Inf) < tol
     @test f(p.solutions) ≈ p.minimum
 end

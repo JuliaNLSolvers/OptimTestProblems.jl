@@ -145,7 +145,7 @@ function penfunI(x::AbstractArray, param)
 end
 
 function penfunI_gradient!(storage::AbstractArray,
-                            x::AbstractArray, param)
+                           x::AbstractArray, param)
     # TODO: we could do this without the xt storage holder
     xt = param.xt
     @. xt = param.alpha*(x-one(eltype(x)))
@@ -159,16 +159,29 @@ function penfunI_hessian!(storage,x,param)
 end
 
 function _penfunIproblem(N::Int;
-                          initial_x::AbstractArray{T} = collect(float(1:N)),
-                          alpha::T = sqrt(1e-5),
-                          name::AbstractString = "Penalty Function I ($N)") where T
+                         initial_x::AbstractArray{T} = collect(float(1:N)),
+                         alpha::T = sqrt(1e-5),
+                         name::AbstractString = "Penalty Function I ($N)") where T
+    if N == 100
+        # Calculated numerically to high precision |g(x)|<1e-15
+        fsol = 0.00045124548840214817
+        xsol = fill(0.05000949719895305, N)
+    elseif N == 200
+        # Calculated numerically to high precision |g(x)|<1e-15
+        fsol = 0.000930530019118627
+        xsol = fill(0.03536498146451683, N)
+    else
+        fsol  = NaN
+        xsol = fill(NaN, N)
+    end
+
     OptimizationProblem(name,
                         penfunI,
                         penfunI_gradient!,
                         penfunI_hessian!,
                         initial_x,
-                        repmat([NaN], N),
-                        NaN,
+                        xsol,
+                        fsol,
                         true,
                         false,
                         ParaboloidStruct(Array{T}(0,0),Array{T}(0),
@@ -212,9 +225,9 @@ function trigonometric_hessian!(storage,x,param)
 end
 
 function _trigonometricproblem(N::Int;
-                          initial_x::AbstractArray{T} = ones(N)/N,
-                          alpha::T = sqrt(1e-5),
-                          name::AbstractString = "Trigonometric ($N)") where T
+                               initial_x::AbstractArray{T} = ones(N)/N,
+                               alpha::T = sqrt(1e-5),
+                               name::AbstractString = "Trigonometric ($N)") where T
     OptimizationProblem(name,
                         trigonometric,
                         trigonometric_gradient!,

@@ -37,7 +37,6 @@ end
 
 function extrosenbrock_fun_gradient!(storage::AbstractArray,
                                      x::AbstractArray, param::MatVecHolder)
-    Base.warn_once("Using fg!")
     n = length(x)
     jodd = 1:2:n-1
     jeven = 2:2:n

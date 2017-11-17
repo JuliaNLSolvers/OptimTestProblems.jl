@@ -35,6 +35,22 @@ function extrosenbrock_gradient!(storage::AbstractArray,
     @. storage[jeven] = 10.0 * xt[jodd]
 end
 
+function extrosenbrock_fun_gradient!(storage::AbstractArray,
+                                     x::AbstractArray, param::MatVecHolder)
+    Base.warn_once("Using fg!")
+    n = length(x)
+    jodd = 1:2:n-1
+    jeven = 2:2:n
+    xt = param.vec
+    @. xt[jodd] = 10.0 * (x[jeven] - x[jodd]^2)
+    @. xt[jeven] = 1.0 - x[jodd]
+
+    @. storage[jodd] = -20.0 * x[jodd] * xt[jodd] - xt[jeven]
+    @. storage[jeven] = 10.0 * xt[jodd]
+    return 0.5*sum(abs2, xt)
+end
+
+
 function extrosenbrock_hessian!(storage,x,param)
     error("Hessian not implemented for Extended Rosenbrock")
 end
@@ -46,6 +62,7 @@ function _extrosenbrockproblem(N::Int;
     OptimizationProblem(name,
                         extrosenbrock,
                         extrosenbrock_gradient!,
+                        extrosenbrock_fun_gradient!,
                         extrosenbrock_hessian!,
                         initial_x,
                         ones(initial_x),
@@ -104,6 +121,28 @@ function extpowell_gradient!(storage::AbstractArray,
     @. storage[j4] = -sqrt(5)*xt[j2] - 2*sqrt(10)*(x[j1]-x[j4]).*xt[j4];
 end
 
+function extpowell_fun_gradient!(storage::AbstractArray,
+                                 x::AbstractArray, param::MatVecHolder)
+    # TODO: we could do this without the xt storage holder
+    n = length(x)
+    j1 = 1:4:n-3;
+    j2 = 2:4:n-2;
+    j3 = 3:4:n-1;
+    j4 = 4:4:n;
+
+    xt = param.vec
+    @. xt[j1] = x[j1] + 10*x[j2]
+    @. xt[j2] = sqrt(5)*(x[j3]-x[j4])
+    @. xt[j3] = (x[j2] - 2*x[j3])^2;
+    @. xt[j4] = sqrt(10)*(x[j1]-x[j4])^2;
+
+    @. storage[j1] = xt[j1] + 2*sqrt(10)*(x[j1]-x[j4]).*xt[j4];
+    @. storage[j2] = 10*xt[j1] + 2*(x[j2]-2*x[j3]).*xt[j3];
+    @. storage[j3] = sqrt(5)*xt[j2] - 4*(x[j2]-2*x[j3]).*xt[j3];
+    @. storage[j4] = -sqrt(5)*xt[j2] - 2*sqrt(10)*(x[j1]-x[j4]).*xt[j4];
+    return 0.5*sum(abs2, xt)
+end
+
 function extpowell_hessian!(storage,x,param)
     error("Hessian not implemented for Extended Powell")
 end
@@ -115,6 +154,7 @@ function _extpowellproblem(N::Int;
     OptimizationProblem(name,
                         extpowell,
                         extpowell_gradient!,
+                        extpowell_fun_gradient!,
                         extpowell_hessian!,
                         initial_x,
                         zeros(initial_x),
@@ -154,6 +194,18 @@ function penfunI_gradient!(storage::AbstractArray,
     @. storage = param.alpha*xt + 2.0*xtend*x
 end
 
+function penfunI_fun_gradient!(storage::AbstractArray,
+                           x::AbstractArray, param)
+    # TODO: we could do this without the xt storage holder
+    xt = param.xt
+    @. xt = param.alpha*(x-one(eltype(x)))
+
+    xtend = sum(abs2,x)-0.25
+    @. storage = param.alpha*xt + 2.0*xtend*x
+    return 0.5*(sum(abs2, xt) + abs2(xtend)) # TODO: make 0.25 a parameter
+end
+
+
 function penfunI_hessian!(storage,x,param)
     error("Hessian not implemented for Penalty Function I")
 end
@@ -178,6 +230,7 @@ function _penfunIproblem(N::Int;
     OptimizationProblem(name,
                         penfunI,
                         penfunI_gradient!,
+                        penfunI_fun_gradient!,
                         penfunI_hessian!,
                         initial_x,
                         xsol,
@@ -220,6 +273,19 @@ function trigonometric_gradient!(storage::AbstractArray,
     @. storage = sxt*sin(x) + xt * ((1:n)*sin(x) - cos(x))
 end
 
+function trigonometric_fun_gradient!(storage::AbstractArray,
+                                 x::AbstractArray, param)
+    # TODO: we could do this without the xt storage holder
+    n = length(x)
+    xt = param.vec
+    scos = sum(cos,x)
+    @. xt = n + (1:n)*(one(eltype(x)) - cos(x)) - sin(x) - scos
+
+    sxt = sum(xt)
+    @. storage = sxt*sin(x) + xt * ((1:n)*sin(x) - cos(x))
+    return 0.5*sum(abs2, xt)
+end
+
 function trigonometric_hessian!(storage,x,param)
     error("Hessian not implemented for Trigonometric Function")
 end
@@ -231,6 +297,7 @@ function _trigonometricproblem(N::Int;
     OptimizationProblem(name,
                         trigonometric,
                         trigonometric_gradient!,
+                        trigonometric_fun_gradient!,
                         trigonometric_hessian!,
                         initial_x,
                         zeros(initial_x),

@@ -15,6 +15,13 @@ function quad_gradient!(storage::Vector, x::Vector, param)
     storage .= mat*xt
 end
 
+function quad_fun_gradient!(storage::Vector, x::Vector, param)
+    mat = param.mat
+    xt = x-param.vec
+    storage .= mat*xt
+    return 0.5*vecdot(xt, mat*xt)
+end
+
 function quad_hessian!(storage::Matrix, x::Vector, param)
     storage .= param.mat
 end
@@ -34,6 +41,7 @@ function _quadraticproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N))
     OptimizationProblem(name,
                         quad,
                         quad_gradient!,
+                        quad_fun_gradient!,
                         quad_hessian!,
                         initial_x,
                         x0,
@@ -78,6 +86,20 @@ function paraboloid_gradient!(storage::AbstractArray, x::AbstractArray, param::P
     storage[1] -= 2.0*param.alpha*xt[1]*sum(storage[2:end])
 end
 
+
+function paraboloid_fun_gradient!(storage::AbstractArray, x::AbstractArray, param::ParaboloidStruct)
+    mat = param.mat
+    xt = param.xt
+
+    @. xt = x - param.vec
+    xt[2:end] .-= param.alpha*xt[1]^2
+
+    storage .= mat*xt
+    storage[1] -= 2.0*param.alpha*xt[1]*sum(storage[2:end])
+
+    return 0.5*vecdot(xt, mat*xt)
+end
+
 function paraboloid_hessian!(storage,x,param)
     error("Hessian not implemented for Paraboloid")
 end
@@ -90,6 +112,7 @@ function _paraboloidproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N)
     OptimizationProblem(name,
                         paraboloid,
                         paraboloid_gradient!,
+                        paraboloid_fun_gradient!,
                         paraboloid_hessian!,
                         initial_x,
                         x0,

@@ -134,8 +134,12 @@ function _randommatrix(N::Int, scaling::Bool=true)
     retval
 end
 
-srand(0) # TODO: is it dodgy to set the random seed in a package?
+# TODO: From Julia 0.7 onwards, we can use Base.Test.guardsrand() to restore the existing seed
+oldseed = copy(Base.GLOBAL_RNG) # Store current seed
+
+srand(0)
 examples["Paraboloid Random matrix"] = _paraboloidproblem(100;
                                                           name = "Paraboloid Random Matrix (100)",
                                                           mat = _randommatrix(100))
-srand()  # TODO: is it fine if we reset the seed after?
+
+copy!(Base.GLOBAL_RNG, oldseed) # Restore current seed

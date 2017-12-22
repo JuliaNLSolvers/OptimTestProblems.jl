@@ -61,10 +61,56 @@ function fletcher_powell(x::Vector)
         (sqrt(x[1]^2 + x[2]^2) - 1.0)^2 + x[3]^2
 end
 
-# TODO: Implement
 function fletcher_powell_gradient!(storage::Vector, x::Vector)
-    return
+    function theta(x::Vector)
+        if x[1] > 0
+            return atan(x[2] / x[1]) / (2.0 * pi)
+        else
+            return (pi + atan(x[2] / x[1])) / (2.0 * pi)
+        end
+    end
+
+    if ( x[1]^2 + x[2]^2 == 0 )
+        dtdx1 = 0;
+        dtdx2 = 0;
+    else
+        dtdx1 = - x[2] / ( 2 * pi * ( x[1]^2 + x[2]^2 ) );
+        dtdx2 =   x[1] / ( 2 * pi * ( x[1]^2 + x[2]^2 ) );
+    end
+
+    storage[1] = -2000.0*(x[3]-10.0*theta(x))*dtdx1 +
+        200.0*(sqrt(x[1]^2+x[2]^2)-1)*x[1]/sqrt( x[1]^2+x[2]^2 );
+    storage[2] = -2000.0*(x[3]-10.0*theta(x))*dtdx2 +
+        200.0*(sqrt(x[1]^2+x[2]^2)-1)*x[2]/sqrt( x[1]^2+x[2]^2 );
+    storage[3] =  200.0*(x[3]-10.0*theta(x)) + 2.0*x[3];
 end
+
+function fletcher_powell_fun_gradient!(storage::Vector, x::Vector)
+    function theta(x::Vector)
+        if x[1] > 0
+            return atan(x[2] / x[1]) / (2.0 * pi)
+        else
+            return (pi + atan(x[2] / x[1])) / (2.0 * pi)
+        end
+    end
+
+    if ( x[1]^2 + x[2]^2 == zero(eltype(x)) )
+        dtdx1 = zero(eltype(x))
+        dtdx2 = zero(eltype(x))
+    else
+        dtdx1 = - x[2] / ( 2.0 * pi * ( x[1]^2 + x[2]^2 ) )
+        dtdx2 =   x[1] / ( 2.0 * pi * ( x[1]^2 + x[2]^2 ) )
+    end
+
+    storage[1] = -2000.0*(x[3]-10.0*theta(x))*dtdx1 +
+        200.0*(sqrt(x[1]^2+x[2]^2)-1.0)*x[1]/sqrt( x[1]^2+x[2]^2 )
+    storage[2] = -2000.0*(x[3]-10.0*theta(x))*dtdx2 +
+        200.0*(sqrt(x[1]^2+x[2]^2)-1.0)*x[2]/sqrt( x[1]^2+x[2]^2 )
+    storage[3] =  200.0*(x[3]-10.0*theta(x)) + 2.0*x[3]
+    return 100.0 * (x[3] - 10.0 * theta(x))^2 +
+        (sqrt(x[1]^2 + x[2]^2) - 1.0)^2 + x[3]^2
+end
+
 
 # TODO: Implement
 function fletcher_powell_hessian!(storage::Matrix, x::Vector)
@@ -78,8 +124,8 @@ examples["Fletcher-Powell"] = OptimizationProblem("Fletcher-Powell",
                                                   fletcher_powell_hessian!,
                                                   [-1.0, 0.0, 0.0], # Same as in source
                                                   [1.0, 0.0, 0.0],
-                                                  fletcher_powell([1.0, 0.0, 0.0]),
-                                                  false,
+                                                  0.0,
+                                                  true,
                                                   false)
 
 ##########################################################################

@@ -120,7 +120,7 @@ end
 examples["Fletcher-Powell"] = OptimizationProblem("Fletcher-Powell",
                                                   fletcher_powell,
                                                   fletcher_powell_gradient!,
-                                                  nothing,
+                                                  fletcher_powell_fun_gradient!,
                                                   fletcher_powell_hessian!,
                                                   [-1.0, 0.0, 0.0], # Same as in source
                                                   [1.0, 0.0, 0.0],

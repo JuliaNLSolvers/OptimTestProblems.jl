@@ -57,8 +57,8 @@ function fletcher_powell(x::Vector)
         end
     end
 
-    return 100.0 * (x[3] - 10.0 * theta(x))^2 +
-        (sqrt(x[1]^2 + x[2]^2) - 1.0)^2 + x[3]^2
+    return 100.0 * ((x[3] - 10.0 * theta(x))^2 +
+        (sqrt(x[1]^2 + x[2]^2) - 1.0)^2) + x[3]^2
 end
 
 function fletcher_powell_gradient!(storage::Vector, x::Vector)
@@ -107,8 +107,8 @@ function fletcher_powell_fun_gradient!(storage::Vector, x::Vector)
     storage[2] = -2000.0*(x[3]-10.0*theta(x))*dtdx2 +
         200.0*(sqrt(x[1]^2+x[2]^2)-1.0)*x[2]/sqrt( x[1]^2+x[2]^2 )
     storage[3] =  200.0*(x[3]-10.0*theta(x)) + 2.0*x[3]
-    return 100.0 * (x[3] - 10.0 * theta(x))^2 +
-        (sqrt(x[1]^2 + x[2]^2) - 1.0)^2 + x[3]^2
+    return 100.0 * ((x[3] - 10.0 * theta(x))^2 +
+        (sqrt(x[1]^2 + x[2]^2) - 1.0)^2) + x[3]^2
 end
 
 

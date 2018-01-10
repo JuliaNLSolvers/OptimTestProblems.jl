@@ -138,7 +138,7 @@ end
 oldseed = copy(Base.GLOBAL_RNG) # Store current seed
 
 srand(0)
-examples["Paraboloid Random matrix"] = _paraboloidproblem(100;
+examples["Paraboloid Random Matrix"] = _paraboloidproblem(100;
                                                           name = "Paraboloid Random Matrix (100)",
                                                           mat = _randommatrix(100))
 

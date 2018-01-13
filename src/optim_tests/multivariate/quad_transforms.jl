@@ -35,7 +35,7 @@ end
 function _quadraticproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N)),
                            x0::AbstractVector{T} = ones(N),
                            initial_x::AbstractVector{T} = zeros(N),
-                           name::AbstractString = "Quadratic Diagonal ($N)") where T
+                           name::AbstractString = "Quadratic Diagonal ($N)") where T <: Number
     # Note that _quadraticproblem is a special case of
     # _paraboloidproblem, where param.alpha = 0.0
     OptimizationProblem(name,
@@ -59,7 +59,6 @@ examples["Quadratic Diagonal"] = _quadraticproblem(100)
 
 immutable ParaboloidStruct{T, Tm <: AbstractArray{T,2},
                            Tv <: AbstractArray{T}} <: Any where T<:Number
-
     mat::Tm
     vec::Tv
     xt::Tv
@@ -108,14 +107,14 @@ function _paraboloidproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N)
                             x0::AbstractVector{T} = ones(N),
                             initial_x::AbstractVector{T} = zeros(N),
                             alpha::T = 10.0,
-                            name::AbstractString = "Paraboloid Diagonal ($N)") where T
+                            name::AbstractString = "Paraboloid Diagonal ($N)") where T <: Number
     OptimizationProblem(name,
                         paraboloid,
                         paraboloid_gradient!,
                         paraboloid_fun_gradient!,
                         paraboloid_hessian!,
                         initial_x,
-                        x0,
+                        x0, # x0 means the solution ...
                         zero(T),
                         true,
                         false,

@@ -4,9 +4,6 @@ import Base.gradient
 
 export OptimizationProblem, objective, gradient, objective_gradient, hessian
 
-#######################
-# TODO: We could write fg! calls as well here
-#######################
 immutable OptimizationProblem{P, Tfg, Tf <: Real, TS <: AbstractString}
     name::TS
     f::Function

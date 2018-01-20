@@ -1,5 +1,6 @@
 using OptimTestProblems
-using Base.Test
+using LinearAlgebra
+using Test
 
 uvp = OptimTestProblems.UnivariateProblems.examples
 for (name, p) in uvp

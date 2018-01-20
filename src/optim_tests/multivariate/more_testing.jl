@@ -64,11 +64,11 @@ function _extrosenbrockproblem(N::Int;
                         extrosenbrock_fun_gradient!,
                         extrosenbrock_hessian!,
                         initial_x,
-                        ones(initial_x),
+                        fill(one(eltype(initial_x)), size(initial_x)),
                         zero(T),
                         true,
                         false,
-                        MatVecHolder(Array{T}(0,0),similar(initial_x)))
+                        MatVecHolder(Array{T}(uninitialized,0,0),similar(initial_x)))
 end
 
 examples["Extended Rosenbrock"] = _extrosenbrockproblem(100)
@@ -156,11 +156,11 @@ function _extpowellproblem(N::Int;
                         extpowell_fun_gradient!,
                         extpowell_hessian!,
                         initial_x,
-                        zeros(initial_x),
+                        zero(initial_x),
                         zero(T),
                         true,
                         false,
-                        MatVecHolder(Array{T}(0,0),similar(initial_x)))
+                        MatVecHolder(Array{T}(uninitialized, 0,0),similar(initial_x)))
 end
 
 examples["Extended Powell"] = _extpowellproblem(100)
@@ -236,7 +236,8 @@ function _penfunIproblem(N::Int;
                         fsol,
                         true,
                         false,
-                        ParaboloidStruct(Array{T}(0,0),Array{T}(0),
+                        ParaboloidStruct(Array{T}(uninitialized,0,0),
+                                         Array{T}(uninitialized,0),
                                          similar(initial_x), alpha))
 end
 
@@ -299,11 +300,11 @@ function _trigonometricproblem(N::Int;
                         trigonometric_fun_gradient!,
                         trigonometric_hessian!,
                         initial_x,
-                        zeros(initial_x),
+                        zero(initial_x),
                         zero(T),
                         true,
                         false,
-                        MatVecHolder(Array{T}(0,0),similar(initial_x)))
+                        MatVecHolder(Array{T}(uninitialized,0,0),similar(initial_x)))
 end
 
 examples["Trigonometric"] = _trigonometricproblem(100)

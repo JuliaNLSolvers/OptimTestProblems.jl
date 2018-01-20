@@ -26,13 +26,13 @@ function quad_hessian!(storage::Matrix, x::Vector, param)
     storage .= param.mat
 end
 
-immutable MatVecHolder{Tv <: AbstractVector,
+struct MatVecHolder{Tv <: AbstractVector,
                        Tm <: AbstractArray}
     mat::Tm
     vec::Tv
 end
 
-function _quadraticproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N)),
+function _quadraticproblem(N::Int; mat::AbstractArray{T,2} = sparse(Diagonal(float(1:N))),
                            x0::AbstractVector{T} = ones(N),
                            initial_x::AbstractVector{T} = zeros(N),
                            name::AbstractString = "Quadratic Diagonal ($N)") where T <: Number
@@ -57,7 +57,7 @@ examples["Quadratic Diagonal"] = _quadraticproblem(100)
 # Paraboloid. Similar to Rosenbrock
 #######################
 
-immutable ParaboloidStruct{T, Tm <: AbstractArray{T,2},
+struct ParaboloidStruct{T, Tm <: AbstractArray{T,2},
                            Tv <: AbstractArray{T}} <: Any where T<:Number
     mat::Tm
     vec::Tv
@@ -103,7 +103,7 @@ function paraboloid_hessian!(storage,x,param)
     error("Hessian not implemented for Paraboloid")
 end
 
-function _paraboloidproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N)),
+function _paraboloidproblem(N::Int; mat::AbstractArray{T,2} = sparse(Diagonal(float(1:N))),
                             x0::AbstractVector{T} = ones(N),
                             initial_x::AbstractVector{T} = zeros(N),
                             alpha::T = 10.0,
@@ -126,19 +126,26 @@ examples["Paraboloid Diagonal"] = _paraboloidproblem(100)
 function _randommatrix(N::Int, scaling::Bool=true)
     F = qrfact(randn(N,N))
     if scaling
-        retval = F[:Q]'*spdiagm(float(1:N))*F[:Q]
+        retval = F.Q'*sparse(Diagonal(float(1:N)))*F.Q
     else
-        retval = F[:Q]'*F[:Q]
+        retval = F.Q'*F.Q
     end
     retval
 end
 
-# TODO: From Julia 0.7 onwards, we can use Base.Test.guardsrand() to restore the existing seed
-oldseed = copy(Base.GLOBAL_RNG) # Store current seed
-
-srand(0)
-examples["Paraboloid Random Matrix"] = _paraboloidproblem(100;
-                                                          name = "Paraboloid Random Matrix (100)",
-                                                          mat = _randommatrix(100))
-
-copy!(Base.GLOBAL_RNG, oldseed) # Restore current seed
+# TODO: From Julia 0.7 onwards, we can use Test.guardsrand() to restore the existing seed
+if isdefined(Test, :guardsrand)
+    Test.guardsrand() do
+        srand(0)
+        examples["Paraboloid Random Matrix"] = _paraboloidproblem(100;
+                                                                  name = "Paraboloid Random Matrix (100)",
+                                                                  mat = _randommatrix(100))
+    end
+else
+    oldseed = copy(Base.GLOBAL_RNG) # Store current seed
+    srand(0)
+    examples["Paraboloid Random Matrix"] = _paraboloidproblem(100;
+                                                              name = "Paraboloid Random Matrix (100)",
+                                                              mat = _randommatrix(100))
+    copy!(Base.GLOBAL_RNG, oldseed) # Restore current seed
+end

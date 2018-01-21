@@ -43,6 +43,7 @@ function _quadraticproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N))
                         quad_gradient!,
                         quad_fun_gradient!,
                         quad_hessian!,
+                        nothing, # Constraints
                         initial_x,
                         x0,
                         zero(T),
@@ -113,6 +114,7 @@ function _paraboloidproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N)
                         paraboloid_gradient!,
                         paraboloid_fun_gradient!,
                         paraboloid_hessian!,
+                        nothing, # Constraints
                         initial_x,
                         x0, # x0 means the solution ...
                         zero(T),

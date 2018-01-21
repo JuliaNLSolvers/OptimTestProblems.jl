@@ -63,6 +63,7 @@ function _extrosenbrockproblem(N::Int;
                         extrosenbrock_gradient!,
                         extrosenbrock_fun_gradient!,
                         extrosenbrock_hessian!,
+                        nothing, # Constraints
                         initial_x,
                         ones(initial_x),
                         zero(T),
@@ -155,6 +156,7 @@ function _extpowellproblem(N::Int;
                         extpowell_gradient!,
                         extpowell_fun_gradient!,
                         extpowell_hessian!,
+                        nothing, # Constraints
                         initial_x,
                         zeros(initial_x),
                         zero(T),
@@ -231,6 +233,7 @@ function _penfunIproblem(N::Int;
                         penfunI_gradient!,
                         penfunI_fun_gradient!,
                         penfunI_hessian!,
+                        nothing, # Constraints
                         initial_x,
                         xsol,
                         fsol,
@@ -298,6 +301,7 @@ function _trigonometricproblem(N::Int;
                         trigonometric_gradient!,
                         trigonometric_fun_gradient!,
                         trigonometric_hessian!,
+                        nothing, # Constraints
                         initial_x,
                         zeros(initial_x),
                         zero(T),
@@ -368,6 +372,7 @@ examples["Beale"] = OptimizationProblem("Beale",
                                         beale_gradient!,
                                         nothing,
                                         beale_hessian!,
+                                        nothing, # Constraints
                                         [1.0, 1.0],
                                         [3.0, 0.5],
                                         beale([3.0, 0.5]),

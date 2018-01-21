@@ -27,5 +27,29 @@ function hs9_jacobian!(J, x)
     J
 end
 
+# TODO: Decide how to store constraint information
+# TODO:    - Maybe we need to import NLSolversBase, as we need the ConstraintsBounds type?
+# TODO:    - Alternatively we just store lx, ux, lc, uc
+
+# struct ConstraintProblemInfo{F,J,H,T}
+#     c!::F                       # c!(storage, x) stores the value of the constraint-functions at x
+#     jacobian!::J                # jacobian!(x, storage) stores the Jacobian of the constraint-functions
+#     h!!::H                      # Hessian of the barrier terms
+#     bounds::ConstraintBounds{T} # From Optim.jl:teh/constrained_0.5
+# end
+# examples["HS9"] = OptimizationProblem("HS9",
+#                                       hs9_obj,
+#                                       hs9_obj_g!,
+#                                       nothing,
+#                                       hs9_obj_h!,
+#                                       TwiceDifferentiableConstraintsFunction(
+#                                           hs9_c!, hs9_jacobian!, hs9_h!,
+#                                           [], [], [0.0], [0.0]),
+#                                       [0.0, 0.0],
+#                                       [[12k-3, 16k-4] for k in (0, 1, -1)], # any integer k will do...
+#                                       hs9_obj([-3.0,-4.0]),
+#                                       true,
+#                                       true)
+
 
 end  # module

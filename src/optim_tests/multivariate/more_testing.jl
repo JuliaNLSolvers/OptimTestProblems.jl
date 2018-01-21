@@ -332,11 +332,11 @@ examples["Trigonometric"] = _trigonometricproblem(100)
 
 sumsq_obj(f, x) = sum(f(x).^2)
 
-function sumsq_gradient!(f, J, x::AbstractVector, g::AbstractVector)
+function sumsq_gradient!(g::AbstractVector, f, J, x::AbstractVector)
     copy!(g, sum((2.0 .* f(x)) .* J(x), 1))
 end
 
-function sumsq_hessian!(f, J, H, x::AbstractVector, h::AbstractMatrix)
+function sumsq_hessian!(h::AbstractMatrix, f, J, H, x::AbstractVector)
     fx = f(x)
     Jx = J(x)
     htmp = 2.0 .* (Jx' * Jx)
@@ -359,12 +359,12 @@ end
 
 beale(x::AbstractVector) = sumsq_obj(beale_f, x)
 
-function beale_gradient!(x::AbstractVector, g::AbstractVector)
-    sumsq_gradient!(beale_f, beale_J, x, g)
+function beale_gradient!(g::AbstractVector, x::AbstractVector)
+    sumsq_gradient!(g, beale_f, beale_J, x)
 end
 
-function beale_hessian!(x::AbstractVector, h::AbstractMatrix)
-    sumsq_hessian!(beale_f, beale_J, beale_H, x, h)
+function beale_hessian!(h::AbstractMatrix, x::AbstractVector)
+    sumsq_hessian!(h, beale_f, beale_J, beale_H, x)
 end
 
 examples["Beale"] = OptimizationProblem("Beale",

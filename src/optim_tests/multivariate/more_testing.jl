@@ -194,7 +194,7 @@ function penfunI_gradient!(storage::AbstractArray,
 end
 
 function penfunI_fun_gradient!(storage::AbstractArray,
-                           x::AbstractArray, param)
+                               x::AbstractArray, param)
     # TODO: we could do this without the xt storage holder
     xt = param.xt
     @. xt = param.alpha*(x-one(eltype(x)))
@@ -273,7 +273,7 @@ function trigonometric_gradient!(storage::AbstractArray,
 end
 
 function trigonometric_fun_gradient!(storage::AbstractArray,
-                                 x::AbstractArray, param)
+                                     x::AbstractArray, param)
     # TODO: we could do this without the xt storage holder
     n = length(x)
     xt = param.vec
@@ -307,3 +307,69 @@ function _trigonometricproblem(N::Int;
 end
 
 examples["Trigonometric"] = _trigonometricproblem(100)
+
+
+##########################################################################
+###
+### Beale (2D)
+###
+### Problem 5 in [3]
+###
+### Sum-of-squares objective, non-convex with g'*inv(H)*g == 0 at the
+### initial position.
+###
+##########################################################################
+
+### General utilities for sum-of-squares functions
+# TODO: Update the other problems that are not Beale to use sumsq as well?
+
+# Requires f(x) and J(x) computes the values and jacobian at x of a set of functions, and
+# that H(x, i) computes the hessian of the ith function
+
+sumsq_obj(f, x) = sum(f(x).^2)
+
+function sumsq_gradient!(f, J, x::AbstractVector, g::AbstractVector)
+    copy!(g, sum((2.0 .* f(x)) .* J(x), 1))
+end
+
+function sumsq_hessian!(f, J, H, x::AbstractVector, h::AbstractMatrix)
+    fx = f(x)
+    Jx = J(x)
+    htmp = 2.0 .* (Jx' * Jx)
+    for i = 1:length(fx)
+        htmp += (2.0 * fx[i]) * H(x, i)
+    end
+    copy!(h, htmp)
+end
+
+const beale_y = [1.5, 2.25, 2.625]
+
+beale_f(x) = [beale_y[i] - x[1]*(1-x[2]^i) for i = 1:3]
+beale_J(x) = hcat([-(1-x[2]^i) for i = 1:3],
+                  [i*x[1]*x[2]^(i-1) for i = 1:3])
+function beale_H(x, i)
+    od = i*x[2]^(i-1)
+    d2 = i > 1 ? i*(i-1)*x[1]*x[2]^(i-2) : zero(x[2])
+    [0 od; od d2]
+end
+
+beale(x::AbstractVector) = sumsq_obj(beale_f, x)
+
+function beale_gradient!(x::AbstractVector, g::AbstractVector)
+    sumsq_gradient!(beale_f, beale_J, x, g)
+end
+
+function beale_hessian!(x::AbstractVector, h::AbstractMatrix)
+    sumsq_hessian!(beale_f, beale_J, beale_H, x, h)
+end
+
+examples["Beale"] = OptimizationProblem("Beale",
+                                        beale,
+                                        beale_gradient!,
+                                        nothing,
+                                        beale_hessian!,
+                                        [1.0, 1.0],
+                                        [3.0, 0.5],
+                                        beale([3.0, 0.5]),
+                                        true,
+                                        true)

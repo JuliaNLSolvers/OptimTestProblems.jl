@@ -27,6 +27,8 @@ function hs9_jacobian!(J, x)
     J
 end
 
+# TODO: IPNewtons  gets stuck when using x0 = [0,0].
+#       Check with Tim if this also happened before?
 examples["HS9"] = OptimizationProblem("HS9",
                                       hs9_obj,
                                       hs9_obj_g!,
@@ -34,8 +36,8 @@ examples["HS9"] = OptimizationProblem("HS9",
                                       hs9_obj_h!,
                                       ConstraintData(hs9_c!, hs9_jacobian!, hs9_h!,
                                                      [], [], [0.0], [0.0]),
-                                      [0.0, 0.0],
-                                      [-3,-4],#[[12k-3, 16k-4] for k in (0, 1, -1)], # any integer k will do...
+                                      [-1.0,2.0],#[0.0, 0.0],
+                                      [-3.0,-4.0],#[[12k-3, 16k-4] for k in (0, 1, -1)], # any integer k will do...
                                       hs9_obj([-3.0,-4.0]),
                                       true,
                                       true)

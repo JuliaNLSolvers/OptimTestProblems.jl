@@ -16,7 +16,6 @@ verbose = false
 
 end
 
-
 @testset "Unconstrained multivariate problems" begin
     muvp = MultivariateProblems.UnconstrainedProblems.examples
     for (name, p) in muvp
@@ -37,6 +36,44 @@ end
         g! = gradient(p)
         g!(gs, p.solutions)
         soltest && @test vecnorm(gs, Inf) < tol
+
+        fg! = objective_gradient(p)
+        fgs = similar(gs)
+        g!(gs, p.initial_x)
+
+        @test fg!(fgs, p.initial_x) ≈ f(p.initial_x)
+        @test vecnorm(fgs.-gs, Inf)  < eps(eltype(gs))
+    end
+end
+
+@testset "Constrained multivariate problems" begin
+    mcvp = MultivariateProblems.ConstrainedProblems.examples
+    for (name, p) in mcvp
+        verbose && print_with_color(:green, "Problem: $name \n")
+        soltest = all(isfinite, p.solutions)
+
+        f = objective(p)
+        soltest && @test f(p.solutions) ≈ p.minimum
+
+        if !isempty(p.constraintdata.lx)
+            @test all(p.solutions .> p.constraintdata.lx)
+        end
+        if !isempty(p.constraintdata.ux)
+            @test all(p.solutions .< p.constraintdata.ux)
+        end
+
+        if !isempty(p.constraintdata.lc)
+            c = zeros(p.constraintdata.lc)
+            p.constraintdata.c!(c, p.solutions)
+            @test all(c .>= p.constraintdata.lc)
+            @test all(c .<= p.constraintdata.uc)
+        end
+
+        # TODO: How do we test for optimality here?
+        gs = similar(p.initial_x)
+        g! = gradient(p)
+        g!(gs, p.solutions)
+        #soltest && @test vecnorm(gs, Inf) < tol
 
         fg! = objective_gradient(p)
         fgs = similar(gs)

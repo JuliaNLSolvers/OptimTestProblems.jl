@@ -6,13 +6,24 @@ export UnconstrainedProblems
 
 export OptimizationProblem, objective, gradient, objective_gradient, hessian
 
-immutable OptimizationProblem{P, Tfg, Tf <: Real, TS <: AbstractString}
+struct ConstraintData{F,J,H,Tx,Tc}
+    c!::F
+    jacobian!::J
+    h!::H
+    lx::Vector{Tx}
+    ux::Vector{Tx}
+    lc::Vector{Tc}
+    uc::Vector{Tc}
+end
+
+immutable OptimizationProblem{P, Tfg, Tf <: Real, TS <: AbstractString,
+                              CT <:  Union{Void,ConstraintData}}
     name::TS
     f::Function
     g!::Function
     fg!::Tfg
     h!::Function
-    constraints
+    constraintdata::CT
     initial_x::Vector
     solutions::Vector
     minimum::Tf
@@ -26,7 +37,7 @@ OptimizationProblem(name::AbstractString,
                     g!::Function,
                     fg!::Tfg,
                     h!::Function,
-                    constraints,
+                    constraints::Union{Void,ConstraintData},
                     initial_x::Vector,
                     solutions::Vector,
                     minimum::Tf,

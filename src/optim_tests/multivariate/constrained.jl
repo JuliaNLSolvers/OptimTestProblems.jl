@@ -42,5 +42,77 @@ examples["HS9"] = OptimizationProblem("HS9",
                                       true,
                                       true)
 
+# Hock and Schittkowski problem number 39.
+#
+#   Source:
+#   Problem 39 in
+#   W. Hock and K. Schittkowski,
+#   Test examples for nonlinear programming codes,
+#   Lectures Notes in Economics and Mathematical Systems 187,
+#   Springer Verlag, Heidelberg, 1981.
+#
+#   classification LOR2-AN-4-2
+#
+#
+# Original source:
+# Example 8.7 in
+# A. Miele, J.L Tiete, and A.V. Levy
+# COMPARISON OF SEVERAL GRADIENT ALGORITHMS FOR MATHEMATICAL PROGRAMMING PROBLEMS, 1972
+#
+
+hs39_obj(x) = -x[1]
+function hs39_obj_g!(g::AbstractVector{T}, x) where T
+    g[1] = -T(1)
+    g[2:4] .= T(0)
+    g
+end
+function hs39_obj_h!(h::AbstractMatrix{T}, x) where T
+    h .= T(0)
+    h
+end
+
+function hs39_c!(c, x)
+    c[1] = x[2] - x[1]^3 - x[3]^2
+    c[2] = x[1]^2 - x[2] - x[4]^2
+    c
+end
+
+function hs39_jacobian!(J::AbstractMatrix{T}, x) where T
+    J[1,1] = -3x[1]^2
+    J[1,2] = T(1)
+    J[1,3] = -2x[3]
+
+    J[2,1] = 2x[1]
+    J[2,2] = -T(1)
+    J[2,4] = -2x[4]
+
+    J
+end
+
+function hs39_h!(h::AbstractMatrix{T}, x, λ) where T
+    h[1,1] += -λ[1]*6*x[1]
+    h[3,3] += -λ[1]*2
+
+    h[1,1] += λ[2]*2
+    h[4,4] += -λ[2]*2
+
+    h
+end
+
+
+examples["HS39"] = OptimizationProblem("HS39",
+                                       hs39_obj,
+                                       hs39_obj_g!,
+                                       nothing,
+                                       hs39_obj_h!,
+                                       ConstraintData(hs39_c!, hs39_jacobian!, hs39_h!,
+                                                      [], [], [0.0,0.0], [0.0,0.0]),
+                                       fill(2.0,4),
+                                       [1.0, 1.0, 0, 0],
+                                       hs39_obj([1.0, 1.0, 0, 0]),
+                                       true,
+                                       true)
+
+
 
 end  # module

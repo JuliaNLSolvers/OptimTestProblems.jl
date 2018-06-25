@@ -69,7 +69,7 @@ function _extrosenbrockproblem(N::Int;
                         zero(T),
                         true,
                         false,
-                        MatVecHolder(Array{T}(0,0),similar(initial_x)))
+                        MatVecHolder(Array{T}(undef, 0,0),similar(initial_x)))
 end
 
 examples["Extended Rosenbrock"] = _extrosenbrockproblem(100)
@@ -162,7 +162,7 @@ function _extpowellproblem(N::Int;
                         zero(T),
                         true,
                         false,
-                        MatVecHolder(Array{T}(0,0),similar(initial_x)))
+                        MatVecHolder(Array{T}(undef, 0,0),similar(initial_x)))
 end
 
 examples["Extended Powell"] = _extpowellproblem(100)
@@ -239,7 +239,7 @@ function _penfunIproblem(N::Int;
                         fsol,
                         true,
                         false,
-                        ParaboloidStruct(Array{T}(0,0),Array{T}(0),
+                        ParaboloidStruct(Array{T}(undef, 0,0),Array{T}(undef, 0),
                                          similar(initial_x), alpha))
 end
 
@@ -307,7 +307,7 @@ function _trigonometricproblem(N::Int;
                         zero(T),
                         true,
                         false,
-                        MatVecHolder(Array{T}(0,0),similar(initial_x)))
+                        MatVecHolder(Array{T}(undef, 0,0),similar(initial_x)))
 end
 
 examples["Trigonometric"] = _trigonometricproblem(100)

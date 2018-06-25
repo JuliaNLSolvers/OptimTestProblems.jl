@@ -16,8 +16,8 @@ struct ConstraintData{F,J,H,Tx,Tc}
     uc::Vector{Tc}
 end
 
-immutable OptimizationProblem{P, Tfg, Tf <: Real, TS <: AbstractString,
-                              CT <:  Union{Void,ConstraintData}}
+struct OptimizationProblem{P, Tfg, Tf <: Real, TS <: AbstractString,
+                           CT <:  Union{Nothing,ConstraintData}}
     name::TS
     f::Function
     g!::Function
@@ -37,7 +37,7 @@ OptimizationProblem(name::AbstractString,
                     g!::Function,
                     fg!::Tfg,
                     h!::Function,
-                    constraints::Union{Void,ConstraintData},
+                    constraints::Union{Nothing,ConstraintData},
                     initial_x::Vector,
                     solutions::Vector,
                     minimum::Tf,
@@ -49,24 +49,24 @@ OptimizationProblem(name::AbstractString,
                                             istwicedifferentiable,
                                             nothing)
 
-objective(p::OptimizationProblem{P}) where P<:Void = p.f
-gradient(p::OptimizationProblem{P}) where P<:Void = p.g!
-objective_gradient(p::OptimizationProblem{P}) where P<:Void = p.fg!
-hessian(p::OptimizationProblem{P}) where P<:Void = p.h!
+objective(p::OptimizationProblem{P}) where P<:Nothing = p.f
+gradient(p::OptimizationProblem{P}) where P<:Nothing = p.g!
+objective_gradient(p::OptimizationProblem{P}) where P<:Nothing = p.fg!
+hessian(p::OptimizationProblem{P}) where P<:Nothing = p.h!
 
 objective(p::OptimizationProblem{P}) where P = x-> p.f(x,p.parameters)
 gradient(p::OptimizationProblem{P}) where P = (out,x)-> p.g!(out,x,p.parameters)
 objective_gradient(p::OptimizationProblem{P}) where P = (out,x)-> p.fg!(out,x,p.parameters)
 hessian(p::OptimizationProblem{P}) where P = (out,x)-> p.h!(out,x,p.parameters)
 
-function objective_gradient(p::OptimizationProblem{P,Tfg}) where P where Tfg <: Void
+function objective_gradient(p::OptimizationProblem{P,Tfg}) where P where Tfg <: Nothing
     (out,x) -> begin
         gradient(p)(out,x)
         return objective(p)(x)
     end
 end
 
-function objective_gradient(p::OptimizationProblem{P,Tfg}) where P <: Void where Tfg <: Void
+function objective_gradient(p::OptimizationProblem{P,Tfg}) where P <: Nothing where Tfg <: Nothing
     (out,x) -> begin
         gradient(p)(out,x)
         return objective(p)(x)

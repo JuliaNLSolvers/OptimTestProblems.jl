@@ -26,8 +26,8 @@ function quad_hessian!(storage::Matrix, x::Vector, param)
     storage .= param.mat
 end
 
-immutable MatVecHolder{Tv <: AbstractVector,
-                       Tm <: AbstractArray}
+struct MatVecHolder{Tv <: AbstractVector,
+                    Tm <: AbstractArray}
     mat::Tm
     vec::Tv
 end
@@ -58,7 +58,7 @@ examples["Quadratic Diagonal"] = _quadraticproblem(100)
 # Paraboloid. Similar to Rosenbrock
 #######################
 
-immutable ParaboloidStruct{T, Tm <: AbstractArray{T,2},
+struct ParaboloidStruct{T, Tm <: AbstractArray{T,2},
                            Tv <: AbstractArray{T}} <: Any where T<:Number
     mat::Tm
     vec::Tv

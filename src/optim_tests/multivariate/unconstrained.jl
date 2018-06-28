@@ -1,8 +1,12 @@
 module UnconstrainedProblems
 
-using ..OptimizationProblem
+import ..OptimizationProblem
 
 export OptimizationProblem
+
+import LinearAlgebra: Diagonal, qr, dot
+import SparseArrays: sparse
+import Random: srand, GLOBAL_RNG
 
 import ..objective, ..gradient, ..hessian
 

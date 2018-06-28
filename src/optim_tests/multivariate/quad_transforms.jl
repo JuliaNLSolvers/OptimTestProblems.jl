@@ -6,7 +6,7 @@
 function quad(x::Vector, param)
     mat = param.mat
     xt = x-param.vec
-    return 0.5*vecdot(xt, mat*xt)
+    return 0.5*dot(xt, mat*xt)
 end
 
 function quad_gradient!(storage::Vector, x::Vector, param)
@@ -19,7 +19,7 @@ function quad_fun_gradient!(storage::Vector, x::Vector, param)
     mat = param.mat
     xt = x-param.vec
     storage .= mat*xt
-    return 0.5*vecdot(xt, mat*xt)
+    return 0.5*dot(xt, mat*xt)
 end
 
 function quad_hessian!(storage::Matrix, x::Vector, param)
@@ -32,7 +32,7 @@ struct MatVecHolder{Tv <: AbstractVector,
     vec::Tv
 end
 
-function _quadraticproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N)),
+function _quadraticproblem(N::Int; mat::AbstractArray{T,2} = sparse(Diagonal(float(1:N))),
                            x0::AbstractVector{T} = ones(N),
                            initial_x::AbstractVector{T} = zeros(N),
                            name::AbstractString = "Quadratic Diagonal ($N)") where T <: Number
@@ -72,7 +72,7 @@ function paraboloid(x::AbstractArray, param::ParaboloidStruct)
     @. xt = x - param.vec
     xt[2:end] .-= param.alpha*xt[1]^2
 
-    return 0.5*vecdot(xt, mat*xt)
+    return 0.5*dot(xt, mat*xt)
 end
 
 function paraboloid_gradient!(storage::AbstractArray, x::AbstractArray, param::ParaboloidStruct)
@@ -97,14 +97,14 @@ function paraboloid_fun_gradient!(storage::AbstractArray, x::AbstractArray, para
     storage .= mat*xt
     storage[1] -= 2.0*param.alpha*xt[1]*sum(storage[2:end])
 
-    return 0.5*vecdot(xt, mat*xt)
+    return 0.5*dot(xt, mat*xt)
 end
 
 function paraboloid_hessian!(storage,x,param)
     error("Hessian not implemented for Paraboloid")
 end
 
-function _paraboloidproblem(N::Int; mat::AbstractArray{T,2} = spdiagm(float(1:N)),
+function _paraboloidproblem(N::Int; mat::AbstractArray{T,2} = sparse(Diagonal(float(1:N))),
                             x0::AbstractVector{T} = ones(N),
                             initial_x::AbstractVector{T} = zeros(N),
                             alpha::T = 10.0,
@@ -126,21 +126,21 @@ end
 examples["Paraboloid Diagonal"] = _paraboloidproblem(100)
 
 function _randommatrix(N::Int, scaling::Bool=true)
-    F = qrfact(randn(N,N))
+    F = qr(randn(N,N))
     if scaling
-        retval = F[:Q]'*spdiagm(float(1:N))*F[:Q]
+        retval = F.Q'*sparse(Diagonal(float(1:N)))*F.Q
     else
-        retval = F[:Q]'*F[:Q]
+        retval = F.Q'*F.Q
     end
     retval
 end
 
 # TODO: From Julia 0.7 onwards, we can use Base.Test.guardsrand() to restore the existing seed
-oldseed = copy(Base.GLOBAL_RNG) # Store current seed
+oldseed = copy(GLOBAL_RNG) # Store current seed
 
 srand(0)
 examples["Paraboloid Random Matrix"] = _paraboloidproblem(100;
                                                           name = "Paraboloid Random Matrix (100)",
                                                           mat = _randommatrix(100))
 
-copy!(Base.GLOBAL_RNG, oldseed) # Restore current seed
+copy!(GLOBAL_RNG, oldseed) # Restore current seed

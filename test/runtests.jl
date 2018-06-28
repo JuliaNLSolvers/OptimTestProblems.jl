@@ -1,7 +1,7 @@
 using OptimTestProblems
 using OptimTestProblems.MultivariateProblems
 
-using Base.Test
+using Test
 
 verbose = false
 

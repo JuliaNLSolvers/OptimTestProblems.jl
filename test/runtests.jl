@@ -1,6 +1,8 @@
 using OptimTestProblems
 using OptimTestProblems.MultivariateProblems
 
+import LinearAlgebra: norm
+
 using Test
 
 verbose = false
@@ -35,14 +37,14 @@ end
         gs = similar(p.initial_x)
         g! = gradient(p)
         g!(gs, p.solutions)
-        soltest && @test vecnorm(gs, Inf) < tol
+        soltest && @test norm(gs, Inf) < tol
 
         fg! = objective_gradient(p)
         fgs = similar(gs)
         g!(gs, p.initial_x)
 
         @test fg!(fgs, p.initial_x) ≈ f(p.initial_x)
-        @test vecnorm(fgs.-gs, Inf)  < eps(eltype(gs))
+        @test norm(fgs.-gs, Inf)  < eps(eltype(gs))
     end
 end
 
@@ -62,8 +64,9 @@ end
             @test all(p.solutions .< p.constraintdata.ux)
         end
 
-        if !isempty(p.constraintdata.lc)
-            c = zeros(p.constraintdata.lc)
+        lc = p.constraintdata.lc
+        if !isempty(lc)
+            c = fill(eltype(lc)(0.0), size(lc))
             p.constraintdata.c!(c, p.solutions)
             @test all(c .>= p.constraintdata.lc)
             @test all(c .<= p.constraintdata.uc)
@@ -73,13 +76,13 @@ end
         gs = similar(p.initial_x)
         g! = gradient(p)
         g!(gs, p.solutions)
-        #soltest && @test vecnorm(gs, Inf) < tol
+        #soltest && @test norm(gs, Inf) < tol
 
         fg! = objective_gradient(p)
         fgs = similar(gs)
         g!(gs, p.initial_x)
 
         @test fg!(fgs, p.initial_x) ≈ f(p.initial_x)
-        @test vecnorm(fgs.-gs, Inf)  < eps(eltype(gs))
+        @test norm(fgs.-gs, Inf)  < eps(eltype(gs))
     end
 end

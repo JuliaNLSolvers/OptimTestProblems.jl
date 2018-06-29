@@ -1,6 +1,7 @@
 module ConstrainedProblems
 
-using ..OptimizationProblem,..ConstraintData
+import ..OptimizationProblem
+import ..ConstraintData
 
 examples = Dict{AbstractString, OptimizationProblem}()
 

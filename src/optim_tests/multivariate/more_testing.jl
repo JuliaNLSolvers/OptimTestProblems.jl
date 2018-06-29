@@ -55,7 +55,7 @@ function extrosenbrock_hessian!(storage,x,param)
 end
 
 function _extrosenbrockproblem(N::Int;
-                               initial_x::AbstractArray{T} = repmat([-1.2,1],Int(N/2)),
+                               initial_x::AbstractArray{T} = repeat([-1.2,1]; inner = round(Int, N/2)),
                                name::AbstractString = "Extended Rosenbrock ($N)") where T
     @assert mod(N,2) == 0
     OptimizationProblem(name,
@@ -65,7 +65,7 @@ function _extrosenbrockproblem(N::Int;
                         extrosenbrock_hessian!,
                         nothing, # Constraints
                         initial_x,
-                        ones(initial_x),
+                        fill(T(1), length(initial_x)),
                         zero(T),
                         true,
                         false,
@@ -148,7 +148,7 @@ function extpowell_hessian!(storage,x,param)
 end
 
 function _extpowellproblem(N::Int;
-                           initial_x::AbstractArray{T} = repmat(float([3,-1,0,1]),Int(N/4)),
+                           initial_x::AbstractArray{T} = repeat(float([3,-1,0,1]); inner = round(Int, N/4)),
                            name::AbstractString = "Extended Powell ($N)") where T
     @assert mod(N,4) == 0
     OptimizationProblem(name,
@@ -158,7 +158,7 @@ function _extpowellproblem(N::Int;
                         extpowell_hessian!,
                         nothing, # Constraints
                         initial_x,
-                        zeros(initial_x),
+                        fill(zero(T), length(initial_x)),
                         zero(T),
                         true,
                         false,
@@ -303,7 +303,7 @@ function _trigonometricproblem(N::Int;
                         trigonometric_hessian!,
                         nothing, # Constraints
                         initial_x,
-                        zeros(initial_x),
+                        fill(T(0), length(initial_x)),
                         zero(T),
                         true,
                         false,
@@ -333,7 +333,7 @@ examples["Trigonometric"] = _trigonometricproblem(100)
 sumsq_obj(f, x) = sum(f(x).^2)
 
 function sumsq_gradient!(g::AbstractVector, f, J, x::AbstractVector)
-    copy!(g, sum((2.0 .* f(x)) .* J(x), 1))
+    copyto!(g, sum((2.0 .* f(x)) .* J(x), dims = 1))
 end
 
 function sumsq_hessian!(h::AbstractMatrix, f, J, H, x::AbstractVector)
@@ -343,7 +343,7 @@ function sumsq_hessian!(h::AbstractMatrix, f, J, H, x::AbstractVector)
     for i = 1:length(fx)
         htmp += (2.0 * fx[i]) * H(x, i)
     end
-    copy!(h, htmp)
+    copyto!(h, htmp)
 end
 
 const beale_y = [1.5, 2.25, 2.625]

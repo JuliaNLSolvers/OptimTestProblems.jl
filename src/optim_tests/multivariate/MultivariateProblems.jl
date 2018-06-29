@@ -1,6 +1,6 @@
 module MultivariateProblems
 
-import Base.gradient
+import LinearAlgebra: dot
 
 export UnconstrainedProblems
 

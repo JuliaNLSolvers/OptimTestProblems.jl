@@ -135,12 +135,8 @@ function _randommatrix(N::Int, scaling::Bool=true)
     retval
 end
 
-# TODO: From Julia 0.7 onwards, we can use Base.Test.guardsrand() to restore the existing seed
-oldseed = copy(GLOBAL_RNG) # Store current seed
-
-srand(0)
+guardsrand(0) do
 examples["Paraboloid Random Matrix"] = _paraboloidproblem(100;
                                                           name = "Paraboloid Random Matrix (100)",
                                                           mat = _randommatrix(100))
-
-copy!(GLOBAL_RNG, oldseed) # Restore current seed
+end

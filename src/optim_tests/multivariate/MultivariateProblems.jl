@@ -1,6 +1,6 @@
 module MultivariateProblems
 
-import LinearAlgebra: gradient, dot
+import LinearAlgebra: dot
 
 export UnconstrainedProblems
 

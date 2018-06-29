@@ -1,7 +1,5 @@
 module OptimTestProblems
 
-import LinearAlgebra: gradient
-
 export MultivariateProblems, UnivariateProblems
 
 

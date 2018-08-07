@@ -6,7 +6,7 @@ export OptimizationProblem
 
 import LinearAlgebra: Diagonal, qr, dot
 import SparseArrays: sparse
-import Test: guardsrand
+import Test: guardseed
 
 import ..objective, ..gradient, ..hessian
 

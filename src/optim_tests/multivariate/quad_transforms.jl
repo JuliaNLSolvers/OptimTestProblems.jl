@@ -135,7 +135,7 @@ function _randommatrix(N::Int, scaling::Bool=true)
     retval
 end
 
-guardsrand(0) do
+guardseed(0) do
 examples["Paraboloid Random Matrix"] = _paraboloidproblem(100;
                                                           name = "Paraboloid Random Matrix (100)",
                                                           mat = _randommatrix(100))

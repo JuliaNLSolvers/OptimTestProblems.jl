@@ -1,10 +1,20 @@
 # OptimTestProblems
 
-[![Build Status](https://travis-ci.org/pkofod/OptimTestProblems.jl.svg?branch=master)](https://travis-ci.org/pkofod/OptimTestProblems.jl)
+[![Build Status][build-img]][build-url]
 
-[![Coverage Status](https://coveralls.io/repos/pkofod/OptimTestProblems.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/pkofod/OptimTestProblems.jl?branch=master)
+[![Codecov branch][cov-img]][cov-url]
 
-[![codecov.io](http://codecov.io/github/pkofod/OptimTestProblems.jl/coverage.svg?branch=master)](http://codecov.io/github/pkofod/OptimTestProblems.jl?branch=master)
+[![][pkg-0.6-img]][pkg-0.6-url]
 
 The purpose of this repository is to provide test problems for JuliaNLSolvers
 packages.
+
+
+[build-img]: https://travis-ci.org/JuliaNLSolvers/OptimTestProblems.jl.svg?branch=master
+[build-url]: https://travis-ci.org/JuliaNLSolvers/OptimTestProblems.jl
+
+[pkg-0.6-img]: http://pkg.julialang.org/badges/OptimTestProblems_0.6.svg
+[pkg-0.6-url]: http://pkg.julialang.org/?pkg=OptimTestProblems&ver=0.6
+
+[cov-img]: http://codecov.io/github/JuliaNLSolvers/OptimTestProblems.jl/coverage.svg?branch=master
+[cov-url]: http://codecov.io/github/JuliaNLSolvers/OptimTestProblems.jl?branch=master

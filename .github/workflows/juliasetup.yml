@@ -1,4 +1,4 @@
-- uses: julia-actions/setup-julia@v1
+uses: julia-actions/setup-julia@v1
   with:
     # The Julia version that will be installed and added as `julia` to the PATH.
     # See "Julia Versions" below for a list of valid values.

@@ -80,11 +80,13 @@ end
 
 function hs39_jacobian!(J::AbstractMatrix{T}, x) where T
     J[1,1] = -3x[1]^2
-    J[1,2] = T(1)
+    J[1,2] = one(T)
     J[1,3] = -2x[3]
+    J[1,4] = zero(T)
 
     J[2,1] = 2x[1]
-    J[2,2] = -T(1)
+    J[2,2] = -one(T)
+    J[2,3] = zero(T)
     J[2,4] = -2x[4]
 
     J

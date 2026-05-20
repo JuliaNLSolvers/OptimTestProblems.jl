@@ -296,6 +296,7 @@ function _trigonometricproblem(N::Int;
                                initial_x::AbstractArray{T} = ones(N)/N,
                                alpha::T = sqrt(1e-5),
                                name::AbstractString = "Trigonometric ($N)") where T
+    _n = length(initial_x))
     OptimizationProblem(name,
                         trigonometric,
                         trigonometric_gradient!,
@@ -303,7 +304,7 @@ function _trigonometricproblem(N::Int;
                         trigonometric_hessian!,
                         nothing, # Constraints
                         initial_x,
-                        fill(T(0), length(initial_x)),
+                        fill(T(1/_n), _n,
                         zero(T),
                         true,
                         false,
